@@ -1,5 +1,7 @@
-def splitNumber(stg, num):
+def splitNumberOnPotency(stg):
+	#slpit number on parts of 3 digit inversed
 	new=[]
+	num = 3
 	for start in (range(len(stg), 0, -num)):
   		if (start-num<0):
   			new.append(stg[0:start])
@@ -7,8 +9,9 @@ def splitNumber(stg, num):
   			new.append(stg[start-num:start])
 	return new
 
+###this function write the number on letters
 def numToStr(num):
-	###banco de palavras
+	###all words
 	unidades = {
 		'0': '',
 		'1':'um',
@@ -49,7 +52,7 @@ def numToStr(num):
 		'3':'trezentos',
 		'4':'quatrocentos',
 		'5':'quinhentos',
-		'6':'seisentos',
+		'6':'seiscentos',
 		'7':'setecentos',
 		'8':'oitocentos',
 		'9':'novecentos'
@@ -70,45 +73,76 @@ def numToStr(num):
 		'trilhões',
 		'quatrilhões'
 	]
-	if (int(num) == 0):
+	strNum = str(num)
+	intNum = int(num)
+	stg = ''
+	###zero needs special rule for it
+	if (intNum == 0):
 		stg = 'zero'
 	else:
-		num = str(num)
-		nums = splitNumber(num, 3)
+		###each three numbers have the same rules
+		nums = splitNumberOnPotency(strNum)
 		stgs=[]
 		for idx, threeDigits in enumerate(nums):
-			stg = ''
+			threeStg = ''
+			#one hundred need special rule for it
 			if (threeDigits == '100'):
-				stg = 'cem'
+				threeStg = 'cem'
 			else:
+				###first, we write two first digits
+				decimalStg = ''
 				decimal = int(threeDigits[-2:])
-				if (decimal <= 9):
-					stg = unidades[str(decimal)]
+				if (decimal == 0):
+					decimalStg = ''
+				elif (decimal <= 9):
+					decimalStg = unidades[str(decimal)]
 				elif (decimal >= 10 and decimal <= 19):
-					stg = dez[str(decimal)]
+					decimalStg = dez[str(decimal)]
 				else:
 					firstDigit = str(decimal)[:1]
 					secondDigit = str(decimal)[-1:]
-					stg = dezenas[firstDigit]
+					decimalStg = dezenas[firstDigit]
 					if (int(secondDigit)==0):
 						pass
 					else:
-						stg += ' e '
-						stg += unidades[str(decimal)[-1:]]
+						decimalStg += ' e '
+						decimalStg += unidades[str(decimal)[-1:]]
+				###then, if there is three digit, we can append it
 				if (int(threeDigits)>99):
-					print ((threeDigits[0]))
-					stg = str(centenas[threeDigits[0]]) + ' e ' + stg
+					threeStg = str(centenas[threeDigits[0]])
+					if (not decimal == 0):
+						threeStg += ' e ' + decimalStg
+				else:
+					threeStg = decimalStg
+			###now we localizate it on the propper potency
 			if (int(threeDigits)>1):
-				stgs.append(stg + ' ' + pot_plural[idx])
+				stgs.append(threeStg + ' ' + pot_plural[idx])
 			elif(int(threeDigits)==1):
-				stgs.append(stg + ' ' + pot_singular[idx])
-		stgs = stgs[::-1]
+				stgs.append(threeStg + ' ' + pot_singular[idx])
+			elif(int(threeDigits)==0):
+				pass
+		###Now join all three digit numbers
 		if (stgs):
-			stg = ' '.join(stgs)
+			first = True
+			moreThenOnePotency = True if len(stgs)>1 else False
+			for strThreeDigit in stgs:
+				if (first):
+					first = False
+					###take off an extra space and 
+					if (strThreeDigit[-1]==' '):
+						strThreeDigit = strThreeDigit[:-1]
+					###some necessary verbose
+					if (int(strNum[-3:])<=100 and moreThenOnePotency):
+						stg += 'e '
+					stg += strThreeDigit
+				else:
+					#sabe rule for the rest of cases
+					stg = strThreeDigit + ' ' + stg
+	###return
 	return stg
 
 def numToCurrency (num):
-	### separar centavos
+	###split integer and cents parts
 	stg = ''
 	num = str(num)
 	cent = int(num[-2:])
@@ -116,26 +150,27 @@ def numToCurrency (num):
 		inteiro = int(num[:-2])
 	else:
 		inteiro = 0
-	### criar stg de centavos
+	###create cents string
 	if (cent == 0):
 		pass
 	elif (cent == 1):
-		stg = ' e %scentavo.' %(numToStr(cent))
+		stg = ' e %s centavo' %(numToStr(cent))
 	else: 
-		stg = ' e %scentavos.' %(numToStr(cent))
-	### criar stg de parte inteira
+		stg = ' e %s centavos' %(numToStr(cent))
+	###create integer string and append cent
 	if (inteiro == 1):
 		stg = '%s real%s' %(numToStr(inteiro), stg)
 	elif(inteiro == 0):
 		pass
 	else:
 		stg = '%s reais%s' %(numToStr(inteiro), stg)
+	###return
 	return (stg)
 
-'''for i in range (90000, 100000):
-	print ( str(i) + " - " + numToCurrency(i))
-'''
-print (numToCurrency(101000))
+for i in range (100000):
+	print ( str(i) + " - ." + numToCurrency(i) + '.')
+
+#print (numToStr(9019))
 """while True:
 	print('coloque um número: ')
 	print (numToCurrency(input()))"""
