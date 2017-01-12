@@ -166,11 +166,3 @@ def numToCurrency (num):
 		stg = '%s reais%s' %(numToStr(inteiro), stg)
 	###return
 	return (stg)
-
-for i in range (100000):
-	print ( str(i) + " - ." + numToCurrency(i) + '.')
-
-#print (numToStr(9019))
-"""while True:
-	print('coloque um número: ')
-	print (numToCurrency(input()))"""
