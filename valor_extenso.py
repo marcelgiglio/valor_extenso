@@ -151,18 +151,25 @@ def numToCurrency (num):
 	else:
 		inteiro = 0
 	###create cents string
+	temCentavo = True
 	if (cent == 0):
-		pass
+		temCentavo = False
 	elif (cent == 1):
-		stg = ' e %s centavo' %(numToStr(cent))
+		stg = '%s centavo' %(numToStr(cent))
 	else: 
-		stg = ' e %s centavos' %(numToStr(cent))
+		stg = '%s centavos' %(numToStr(cent))
 	###create integer string and append cent
-	if (inteiro == 1):
-		stg = '%s real%s' %(numToStr(inteiro), stg)
-	elif(inteiro == 0):
+	if (inteiro == 0):
 		pass
 	else:
-		stg = '%s reais%s' %(numToStr(inteiro), stg)
+		if (temCentavo):
+			stg = " e " + stg
+		if(inteiro == 1):
+			stg = '%s real%s' %(numToStr(inteiro), stg)
+		else:
+			if (str(inteiro)[:-7:-1] == "000000"):
+				stg = '%s de reais%s' %(numToStr(inteiro), stg)
+			else:
+				stg = '%s reais%s' %(numToStr(inteiro), stg)
 	###return
 	return (stg)
